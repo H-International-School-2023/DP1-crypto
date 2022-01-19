@@ -59,12 +59,38 @@ for (let i = 1; i < closes.length; i = i + 1) {
 
 const amountOfBTCToTrade = 0.1;
 let BTC = 1;
-let USDT = -(opens[0] * BTC);
+let USDT = 0;
+const commissionRate = 0.001;
+
+let totalCommission = 0;
+let numberOfBuy = 0;
+let numberOfSell = 0;
 
 for (let i = 0; i < returns.length; i = i + 1) {
   const currentReturn = returns[i];
   if (currentReturn > 1 && BTC >= amountOfBTCToTrade) {
     BTC = BTC - amountOfBTCToTrade;
-    USDT = USDT + amountOfBTCToTrade * closes[i];
+    const price = amountOfBTCToTrade * closes[i];
+    totalCommission = totalCommission + price * commissionRate;
+    USDT = USDT + price;
+    numberOfSell = numberOfSell + 1;
+  }
+  if (currentReturn < 1) {
+    BTC = BTC + amountOfBTCToTrade;
+    const price = amountOfBTCToTrade * closes[i];
+    totalCommission = totalCommission + price * commissionRate;
+    USDT = USDT - price;
+    numberOfBuy = numberOfBuy + 1;
   }
 }
+
+// if (BTC > 0) {
+//   USDT = USDT + BTC * closes[closes.length - 1];
+//   BTC = 0;
+// }
+
+console.log('I have BTC:', BTC);
+console.log('I have USDT:', USDT);
+console.log('Total commision:', totalCommission);
+console.log('Number of buy:', numberOfBuy);
+console.log('Number of sell:', numberOfSell);
